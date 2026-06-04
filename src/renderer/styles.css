@@ -306,6 +306,113 @@ body {
     color: var(--danger);
 }
 
+/* Onboarding (setup view) */
+.onboard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 14px 12px;
+}
+
+.onboard .setup-title {
+    text-align: center;
+}
+
+.onboard-steps {
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 10.5px;
+    line-height: 1.4;
+    color: var(--text-dim);
+}
+
+.onboard-steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 7px;
+    align-items: baseline;
+}
+
+.onboard-steps li::before {
+    content: counter(step);
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 9px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.onboard-steps code,
+.onboard-steps b {
+    color: var(--text);
+}
+
+.onboard-steps code {
+    background: var(--panel);
+    padding: 0 3px;
+    border-radius: 3px;
+    font-size: 9.5px;
+}
+
+.primary-btn.wide {
+    width: 100%;
+}
+
+.onboard-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.onboard-fields input {
+    -webkit-app-region: no-drag;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 7px 9px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    width: 100%;
+}
+
+.onboard-fields input:focus {
+    border-color: var(--accent);
+}
+
+.onboard-error {
+    font-size: 10.5px;
+    color: var(--danger);
+    line-height: 1.4;
+}
+
+.onboard-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.onboard-actions button {
+    flex: 1;
+}
+
+.inline-link {
+    font-size: 10px;
+    color: var(--accent);
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+}
+
 /* Settings */
 .settings {
     display: flex;

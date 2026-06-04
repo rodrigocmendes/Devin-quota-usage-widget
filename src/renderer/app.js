@@ -21,18 +21,24 @@ const els = {
   breakdown: document.getElementById('breakdown'),
   lastUpdated: document.getElementById('lastUpdated'),
   // setup / error
-  setupText: document.getElementById('setupText'),
   errorTitle: document.getElementById('errorTitle'),
   errorText: document.getElementById('errorText'),
+  // onboarding (setup view)
+  openDevinBtn: document.getElementById('openDevinBtn'),
+  setupApiKey: document.getElementById('setupApiKey'),
+  setupOrgId: document.getElementById('setupOrgId'),
+  setupError: document.getElementById('setupError'),
+  setupDemoBtn: document.getElementById('setupDemoBtn'),
+  setupSaveBtn: document.getElementById('setupSaveBtn'),
   // buttons
   refreshBtn: document.getElementById('refreshBtn'),
   settingsBtn: document.getElementById('settingsBtn'),
   minimizeBtn: document.getElementById('minimizeBtn'),
   closeBtn: document.getElementById('closeBtn'),
-  openSettingsFromSetup: document.getElementById('openSettingsFromSetup'),
   retryBtn: document.getElementById('retryBtn'),
   cancelSettings: document.getElementById('cancelSettings'),
   saveSettings: document.getElementById('saveSettings'),
+  openDevinSettings: document.getElementById('openDevinSettings'),
   docsLink: document.getElementById('docsLink'),
   // settings fields
   demoMode: document.getElementById('demoMode'),
@@ -50,10 +56,12 @@ const els = {
 const VIEW_HEIGHTS = {
   usage: 252,
   loading: 200,
-  setup: 230,
+  setup: 360,
   error: 230,
-  settings: 470
+  settings: 490
 };
+
+const DEVIN_SETTINGS_URL = 'https://app.devin.ai/settings';
 
 let currentSettings = null;
 
@@ -152,7 +160,7 @@ async function loadUsage(showLoading = true) {
       renderUsage(result.usage, currentSettings);
       showView('usage');
     } else if (result.error === 'missing-credentials') {
-      showView('setup');
+      showSetup();
     } else {
       const msg = errorMessage(result);
       els.errorTitle.textContent = msg.title;
@@ -166,6 +174,44 @@ async function loadUsage(showLoading = true) {
   } finally {
     els.refreshBtn.classList.remove('spinning');
   }
+}
+
+async function showSetup() {
+  const creds = await api.getCredentials();
+  els.setupApiKey.value = creds.apiKey || '';
+  els.setupOrgId.value = creds.orgId || '';
+  els.setupError.style.display = 'none';
+  showView('setup');
+}
+
+async function connectFromSetup() {
+  const apiKey = els.setupApiKey.value.trim();
+  const orgId = els.setupOrgId.value.trim();
+  if (!apiKey || !orgId) {
+    return setupError('Paste both your API key and Org ID.');
+  }
+  if (!apiKey.startsWith('cog_')) {
+    return setupError('API key should start with "cog_".');
+  }
+  if (!orgId.startsWith('org-')) {
+    return setupError('Org ID should start with "org-".');
+  }
+  els.setupError.style.display = 'none';
+  await api.saveCredentials({ apiKey, orgId });
+  if (currentSettings.demoMode) {
+    currentSettings = await api.saveSettings({ ...currentSettings, demoMode: false });
+  }
+  await loadUsage();
+}
+
+function setupError(text) {
+  els.setupError.textContent = text;
+  els.setupError.style.display = 'block';
+}
+
+async function enableDemoFromSetup() {
+  currentSettings = await api.saveSettings({ ...currentSettings, demoMode: true });
+  await loadUsage();
 }
 
 function fillSettingsForm() {
@@ -215,10 +261,16 @@ function bindEvents() {
   els.settingsBtn.addEventListener('click', openSettings);
   els.minimizeBtn.addEventListener('click', () => api.minimizeWindow());
   els.closeBtn.addEventListener('click', () => api.closeWindow());
-  els.openSettingsFromSetup.addEventListener('click', openSettings);
+  els.openDevinBtn.addEventListener('click', () => api.openExternal(DEVIN_SETTINGS_URL));
+  els.setupSaveBtn.addEventListener('click', connectFromSetup);
+  els.setupDemoBtn.addEventListener('click', enableDemoFromSetup);
   els.retryBtn.addEventListener('click', () => loadUsage());
   els.cancelSettings.addEventListener('click', () => loadUsage());
   els.saveSettings.addEventListener('click', saveSettings);
+  els.openDevinSettings.addEventListener('click', (e) => {
+    e.preventDefault();
+    api.openExternal(DEVIN_SETTINGS_URL);
+  });
   els.docsLink.addEventListener('click', (e) => {
     e.preventDefault();
     api.openExternal('https://docs.devin.ai/api-reference/v3/consumption/organizations-consumption-daily');

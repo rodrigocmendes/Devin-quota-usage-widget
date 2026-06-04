@@ -90,10 +90,24 @@
             </div>
 
             <!-- Empty / needs config -->
-            <div class="view center" id="setupView" style="display:none;">
+            <div class="view onboard" id="setupView" style="display:none;">
                 <p class="setup-title">Connect to Devin</p>
-                <p class="setup-text" id="setupText">Add your API key and Org ID to start tracking quota usage.</p>
-                <button class="primary-btn" id="openSettingsFromSetup">Open Settings</button>
+                <ol class="onboard-steps">
+                    <li>Open Devin → <b>Settings → Service Users</b></li>
+                    <li>Create a service user, then <b>Generate API key</b></li>
+                    <li>Paste the <code>cog_</code> key and your <code>org-</code> ID below</li>
+                </ol>
+                <button class="primary-btn wide" id="openDevinBtn">Create token in Devin</button>
+                <div class="onboard-fields">
+                    <input type="password" id="setupApiKey" placeholder="cog_..." spellcheck="false"
+                        autocomplete="off">
+                    <input type="text" id="setupOrgId" placeholder="org-..." spellcheck="false" autocomplete="off">
+                </div>
+                <p class="onboard-error" id="setupError" style="display:none;"></p>
+                <div class="onboard-actions">
+                    <button class="ghost-btn" id="setupDemoBtn">Try demo</button>
+                    <button class="primary-btn" id="setupSaveBtn">Save &amp; connect</button>
+                </div>
             </div>
 
             <!-- Error -->
@@ -121,6 +135,7 @@
                             <span>Org ID (org-…)</span>
                             <input type="text" id="orgId" placeholder="org-..." spellcheck="false" autocomplete="off">
                         </label>
+                        <a href="#" class="inline-link" id="openDevinSettings">Open Devin → Service Users to create a token</a>
                     </div>
 
                     <div class="field-row">
@@ -165,7 +180,8 @@
                     </label>
 
                     <p class="settings-hint">
-                        Needs a service user token with <code>ManageBilling</code>.
+                        Needs a service user token with billing access. The Org ID is shown on the
+                        Service Users page where you create the key.
                         <a href="#" id="docsLink">API docs</a>
                     </p>
                 </div>
