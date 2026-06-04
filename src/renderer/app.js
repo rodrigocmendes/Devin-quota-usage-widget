@@ -65,6 +65,7 @@ const PRODUCT_COLORS = {
 };
 
 function showView(name) {
+  if (name !== 'usage') els.demoBadge.style.display = 'none';
   els.usageView.style.display = name === 'usage' ? 'block' : 'none';
   els.loadingView.style.display = name === 'loading' ? 'flex' : 'none';
   els.setupView.style.display = name === 'setup' ? 'flex' : 'none';
