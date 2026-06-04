@@ -80,6 +80,26 @@ Artifacts are written to `dist/`. Builds are produced with
 [`electron-builder`](https://www.electron.build/); build each target on (or for)
 its matching OS.
 
+## Releasing
+
+Pushing a tag that starts with `v` triggers
+[`.github/workflows/release.yml`](.github/workflows/release.yml), which builds on
+Windows, macOS, and Linux runners and uploads the installers to a **draft GitHub
+Release** for that tag (via `electron-builder --publish always`).
+
+```bash
+# bump "version" in package.json first, then:
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Review the draft Release on GitHub and click **Publish**. No secrets are required —
+the workflow uses the built-in `GITHUB_TOKEN`.
+
+> The installers are **not code-signed**. On macOS users must right-click → Open
+> (Gatekeeper), and on Windows SmartScreen shows a warning. For signed builds, add
+> an Apple Developer ID (+ notarization) and a Windows Authenticode certificate.
+
 ## Configuration
 
 Open **Settings** (gear icon) to set:

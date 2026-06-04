@@ -7,10 +7,11 @@
     "start": "electron .",
     "dev": "cross-env NODE_ENV=development electron .",
     "lint": "node scripts/lint.js",
-    "build": "electron-builder",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:linux": "electron-builder --linux"
+    "build": "electron-builder --publish never",
+    "build:win": "electron-builder --win --publish never",
+    "build:mac": "electron-builder --mac --publish never",
+    "build:linux": "electron-builder --linux --publish never",
+    "release": "electron-builder --publish always"
   },
   "keywords": [
     "devin",
@@ -38,7 +39,13 @@
     "appId": "com.devinusage.widget",
     "productName": "Devin-Quota-Usage-Widget",
     "copyright": "Copyright © 2026 Rodrigo Mendes",
-    "publish": null,
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "rodrigocmendes",
+        "repo": "Devin-quota-usage-widget"
+      }
+    ],
     "files": [
       "main.js",
       "preload.js",
@@ -51,7 +58,7 @@
         "nsis",
         "portable"
       ],
-      "icon": "assets/icon.png"
+      "icon": "assets/icon.ico"
     },
     "portable": {
       "artifactName": "${productName}-${version}-win-portable.${ext}"
