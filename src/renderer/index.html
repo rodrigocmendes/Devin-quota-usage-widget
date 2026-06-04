@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        script-src 'self';
+        style-src 'self' 'unsafe-inline';
+        font-src 'self';
+        img-src 'self' data:;
+        connect-src 'none';
+    ">
+    <title>Devin Quota Usage</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="app" data-theme="dark">
+        <div class="widget" id="widget">
+            <!-- Title bar -->
+            <div class="title-bar" id="titleBar">
+                <div class="title">
+                    <span class="logo-dot"></span>
+                    <span class="title-text">Devin Quota</span>
+                    <span class="demo-badge" id="demoBadge" style="display:none;">DEMO</span>
+                </div>
+                <div class="controls">
+                    <button class="ctrl-btn" id="refreshBtn" title="Refresh">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M23 4v6h-6M1 20v-6h6" />
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn" id="settingsBtn" title="Settings">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3" />
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn" id="minimizeBtn" title="Minimize to tray">&#8211;</button>
+                    <button class="ctrl-btn close" id="closeBtn" title="Quit">&times;</button>
+                </div>
+            </div>
+
+            <!-- Usage view -->
+            <div class="view" id="usageView">
+                <div class="usage-block">
+                    <div class="usage-head">
+                        <span class="usage-label">Daily</span>
+                        <span class="usage-value" id="dailyValue">— / —</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="dailyBar"></div>
+                    </div>
+                    <div class="usage-sub">
+                        <span id="dailyPercent">0%</span>
+                        <span id="dailyRemaining"></span>
+                    </div>
+                </div>
+
+                <div class="usage-block">
+                    <div class="usage-head">
+                        <span class="usage-label">Weekly</span>
+                        <span class="usage-value" id="weeklyValue">— / —</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill" id="weeklyBar"></div>
+                    </div>
+                    <div class="usage-sub">
+                        <span id="weeklyPercent">0%</span>
+                        <span id="weeklyRemaining"></span>
+                    </div>
+                </div>
+
+                <div class="breakdown" id="breakdown"></div>
+                <div class="footer">
+                    <span class="updated" id="lastUpdated">—</span>
+                    <span class="unit">ACUs</span>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="view center" id="loadingView" style="display:none;">
+                <div class="spinner"></div>
+                <p>Loading usage…</p>
+            </div>
+
+            <!-- Empty / needs config -->
+            <div class="view onboard" id="setupView" style="display:none;">
+                <p class="setup-title">Connect to Devin</p>
+                <ol class="onboard-steps">
+                    <li>Open Devin → <b>Settings → Service Users</b></li>
+                    <li>Create a service user, then <b>Generate API key</b></li>
+                    <li>Paste the <code>cog_</code> key and your <code>org-</code> ID below</li>
+                </ol>
+                <button class="primary-btn wide" id="openDevinBtn">Create token in Devin</button>
+                <div class="onboard-fields">
+                    <input type="password" id="setupApiKey" placeholder="cog_..." spellcheck="false"
+                        autocomplete="off">
+                    <input type="text" id="setupOrgId" placeholder="org-..." spellcheck="false" autocomplete="off">
+                </div>
+                <p class="onboard-error" id="setupError" style="display:none;"></p>
+                <div class="onboard-actions">
+                    <button class="ghost-btn" id="setupDemoBtn">Try demo</button>
+                    <button class="primary-btn" id="setupSaveBtn">Save &amp; connect</button>
+                </div>
+            </div>
+
+            <!-- Error -->
+            <div class="view center" id="errorView" style="display:none;">
+                <p class="error-title" id="errorTitle">Something went wrong</p>
+                <p class="error-text" id="errorText"></p>
+                <button class="primary-btn" id="retryBtn">Retry</button>
+            </div>
+
+            <!-- Settings -->
+            <div class="view settings" id="settingsView" style="display:none;">
+                <div class="settings-scroll">
+                    <label class="toggle-row">
+                        <span>Demo mode (sample data)</span>
+                        <input type="checkbox" id="demoMode">
+                    </label>
+
+                    <div class="field-group" id="credFields">
+                        <label class="field">
+                            <span>API Key (cog_…)</span>
+                            <input type="password" id="apiKey" placeholder="cog_..." spellcheck="false"
+                                autocomplete="off">
+                        </label>
+                        <label class="field">
+                            <span>Org ID (org-…)</span>
+                            <input type="text" id="orgId" placeholder="org-..." spellcheck="false" autocomplete="off">
+                        </label>
+                        <a href="#" class="inline-link" id="openDevinSettings">Open Devin → Service Users to create a token</a>
+                    </div>
+
+                    <div class="field-row">
+                        <label class="field">
+                            <span>Daily limit</span>
+                            <input type="number" id="dailyLimit" min="1" step="1">
+                        </label>
+                        <label class="field">
+                            <span>Weekly limit</span>
+                            <input type="number" id="weeklyLimit" min="1" step="1">
+                        </label>
+                    </div>
+
+                    <div class="field-row">
+                        <label class="field">
+                            <span>Warn %</span>
+                            <input type="number" id="warnThreshold" min="1" max="100" step="1">
+                        </label>
+                        <label class="field">
+                            <span>Danger %</span>
+                            <input type="number" id="dangerThreshold" min="1" max="100" step="1">
+                        </label>
+                    </div>
+
+                    <div class="field-row">
+                        <label class="field">
+                            <span>Refresh (min)</span>
+                            <input type="number" id="refreshMinutes" min="1" max="120" step="1">
+                        </label>
+                        <label class="field">
+                            <span>Theme</span>
+                            <select id="theme">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <label class="toggle-row">
+                        <span>Always on top</span>
+                        <input type="checkbox" id="alwaysOnTop">
+                    </label>
+
+                    <p class="settings-hint">
+                        Needs a service user token with billing access. The Org ID is shown on the
+                        Service Users page where you create the key.
+                        <a href="#" id="docsLink">API docs</a>
+                    </p>
+                </div>
+                <div class="settings-actions">
+                    <button class="ghost-btn" id="cancelSettings">Cancel</button>
+                    <button class="primary-btn" id="saveSettings">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
