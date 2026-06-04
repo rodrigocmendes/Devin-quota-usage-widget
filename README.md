@@ -41,6 +41,21 @@ It reads `consumption_by_date[]` (ACUs per billing day, midnight PST) and comput
 
 See the [API docs](https://docs.devin.ai/api-reference/v3/consumption/organizations-consumption-daily).
 
+## First run
+
+On first launch the widget shows a **Connect to Devin** screen:
+
+1. Click **Create token in Devin** — this opens `app.devin.ai` in your browser, where
+   you log in (email, GitHub, Google, …) and go to **Settings → Service Users**.
+2. Create a service user with billing access and **Generate API key** (`cog_…`).
+3. Copy the key and your **Org ID** (shown on the same page), paste both into the
+   widget, and click **Save & connect**.
+
+No credentials yet? Click **Try demo** to preview the UI with sample data.
+
+> Devin has no public OAuth flow for third-party apps, so the app can't read your
+> account purely from a browser login. The token is pasted once and stored locally.
+
 ## Development
 
 ```bash
